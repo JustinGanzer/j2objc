@@ -298,10 +298,19 @@ public class TypeDeclarationGenerator extends TypeGenerator {
         lastDeclaration = declaration;
         JavadocGenerator.printDocComment(getBuilder(), declaration.getJavadoc());
         printIndent();
-        if (ElementUtil.isWeakReference(varElement) && !ElementUtil.isVolatile(varElement)) {
-          // We must add this even without -use-arc because the header may be
-          // included by a file compiled with ARC.
-          print("__unsafe_unretained ");
+        if (!ElementUtil.isVolatile(varElement)) {
+          if (ElementUtil.isWeakReference(varElement)) {
+            // We must add this even without -use-arc because the header may be
+            // included by a file compiled with ARC.
+            print("__unsafe_unretained ");
+          }
+          if (ElementUtil.isZeroingWeakReference(varElement)) {
+            if (options.useARC()) {
+              print("weak ");
+            } else {
+              // Handled by ZeroingWeakRewriter.
+            }
+          }
         }
         String objcType = getDeclarationType(varElement);
         needsAsterisk = objcType.endsWith("*");

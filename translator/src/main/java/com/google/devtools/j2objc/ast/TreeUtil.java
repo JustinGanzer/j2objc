@@ -236,22 +236,64 @@ public class TreeUtil {
    */
   public static VariableElement getVariableElement(Expression node) {
     node = trimParentheses(node);
-    switch (node.getKind()) {
+    VariableAccess variableAccess = getVariableAccess(node);
+    return variableAccess == null ? null : variableAccess.getVariableElement();
+  }
+
+  public static VariableElement getVariableElement(Name node) {
+    VariableAccess variableAccess = getVariableAccess(node);
+    return variableAccess == null ? null : variableAccess.getVariableElement();
+  }
+
+  public static VariableAccess getVariableAccess(Expression expression) {
+    switch (expression.getKind()) {
       case FIELD_ACCESS:
-        return ((FieldAccess) node).getVariableElement();
+        return new VariableAccess() {
+          @Override
+          public VariableElement getVariableElement() {
+            return ((FieldAccess) expression).getVariableElement();
+          }
+
+          @Override
+          public void setVariableElement(VariableElement variableElement) {
+            ((FieldAccess) expression).setVariableElement(variableElement);
+          }
+        };
       case SUPER_FIELD_ACCESS:
-        return ((SuperFieldAccess) node).getVariableElement();
+        return new VariableAccess() {
+          @Override
+          public VariableElement getVariableElement() {
+            return ((SuperFieldAccess) expression).getVariableElement();
+          }
+
+          @Override
+          public void setVariableElement(VariableElement variableElement) {
+            ((SuperFieldAccess) expression).setVariableElement(variableElement);
+          }
+        };
       case QUALIFIED_NAME:
       case SIMPLE_NAME:
-        return getVariableElement((Name) node);
+        return getVariableAccess((Name) expression);
       default:
         return null;
     }
   }
 
-  public static VariableElement getVariableElement(Name node) {
-    Element element = node.getElement();
-    return element != null && ElementUtil.isVariable(element) ? (VariableElement) element : null;
+  public static VariableAccess getVariableAccess(Name name) {
+    Element element = name.getElement();
+    return element != null && ElementUtil.isVariable(element)
+        ? new VariableAccess() {
+          @Override
+          public VariableElement getVariableElement() {
+            return (VariableElement) name.getElement();
+          }
+
+          @Override
+          public void setVariableElement(VariableElement variableElement) {
+            name.setElement(variableElement);
+          }
+        }
+        : null;
   }
 
   public static ExecutableElement getExecutableElement(Expression node) {

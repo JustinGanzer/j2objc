@@ -14,6 +14,8 @@
 
 package com.google.devtools.j2objc.ast;
 
+import java.util.function.Function;
+
 /**
  * A link between a parent and child node that allows for efficient swapping of
  * nodes and handles reparenting of the old and new node when setting a child.
@@ -33,6 +35,10 @@ class ChildLink<T extends TreeNode> {
     return new ChildLink<T>(childType, parent);
   }
 
+  public Class<T> getChildType() {
+    return childType;
+  }
+
   public TreeNode getParent() {
     return parent;
   }
@@ -45,9 +51,14 @@ class ChildLink<T extends TreeNode> {
     if (child == newChild) {
       return;
     }
+    update(oldChild -> newChild);
+  }
+
+  public void update(Function<? super T, ? extends T> function) {
     if (child != null) {
       child.setOwner(null);
     }
+    T newChild = function.apply(child);
     if (newChild != null) {
       newChild.setOwner(this);
     }
@@ -58,12 +69,22 @@ class ChildLink<T extends TreeNode> {
     set(null);
   }
 
-  @SuppressWarnings("unchecked")
   public void setDynamic(TreeNode newChild) {
-    assert newChild == null || childType.isInstance(newChild)
-        : "Cannot assign node of type " + newChild.getClass().getName() + " to child of type "
-            + childType.getName();
-    set((T) newChild);
+    updateDynamic(child -> newChild);
+  }
+
+  @SuppressWarnings("unchecked")
+  public void updateDynamic(Function<TreeNode, TreeNode> function) {
+    update(
+        child -> {
+          TreeNode newChild = function.apply(child);
+          assert newChild == null || childType.isInstance(newChild)
+              : "Cannot assign node of type "
+                  + newChild.getClass().getName()
+                  + " to child of type "
+                  + childType.getName();
+          return (T) newChild;
+        });
   }
 
   @SuppressWarnings("unchecked")

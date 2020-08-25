@@ -82,6 +82,7 @@ public class OperatorRewriter extends UnitTreeVisitor {
     if (node.getOperator() == Assignment.Operator.ASSIGN) {
       rewriteRegularAssignment(node);
     } else if (isStringAppend(node)) {
+      // TODO: @ZeroingWeak should be rewritten as ordinary compound assign.
       rewriteStringAppend(node);
     } else {
       rewriteCompoundAssign(node);

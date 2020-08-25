@@ -419,6 +419,11 @@ public final class TypeUtil {
     return javaThrowable;
   }
 
+  public DeclaredType getJavaWeakReference(TypeMirror param) {
+    return javacTypes.getDeclaredType(
+        javacElements.getTypeElement("java.lang.ref.WeakReference"), param);
+  }
+
   public boolean isString(TypeElement e) {
     return javaString.equals(e) || NS_STRING.equals(e);
   }

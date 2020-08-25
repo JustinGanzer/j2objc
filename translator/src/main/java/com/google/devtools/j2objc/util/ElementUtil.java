@@ -382,6 +382,10 @@ public final class ElementUtil {
         || (var instanceof GeneratedVariableElement && ((GeneratedVariableElement) var).isWeak());
   }
 
+  public static boolean isZeroingWeakReference(VariableElement var) {
+    return hasNamedAnnotation(var, "ZeroingWeak");
+  }
+
   public boolean isWeakOuterType(TypeElement type) {
     if (type instanceof LambdaTypeElement) {
       return ((LambdaTypeElement) type).isWeakOuter();

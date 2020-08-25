@@ -62,6 +62,7 @@ import scenelib.annotations.el.AScene;
  *
  * @author Keith Stanger
  */
+// DO_NOT_SUBMIT: Add support for @ZeroingWeak.
 public class GraphBuilder {
 
   private final Map<String, TypeNode> allTypes = new HashMap<>();
