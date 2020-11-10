@@ -104,7 +104,7 @@ DIST_LIBS = $(LIBS:$(ARCH_BUILD_DIR)/%=$(ARCH_LIB_DIR)/%)
 # This list overlaps with EMULATION_HEADERS, but only includes those headers
 # supported for use by native code.
 PUBLIC_EMULATION_HEADERS = $(PUBLIC_NATIVE_HEADERS)
-PUBLIC_TRANSLATED_HEADERS = $(JAVA_PUBLIC_SOURCES:.java=.h)
+PUBLIC_TRANSLATED_HEADERS = $(JAVA_PUBLIC_SOURCES:.java=.h) $(JSON_PUBLIC_SOURCES:.java=.h)
 INCLUDES = $(PUBLIC_TRANSLATED_HEADERS) $(PUBLIC_EMULATION_HEADERS)
 DIST_INCLUDES = $(INCLUDES:%=$(DIST_INCLUDE_DIR)/%)
 
@@ -169,6 +169,9 @@ $(CLASS_DIR)/%.o: $(EMULATION_CLASS_DIR)/%.m | translate
 	@mkdir -p $(@D)
 	@echo clang -c $<
 	@$(CLANG) $(OBJCFLAGS) -I$(EMULATION_CLASS_DIR) -I$(GEN_OBJC_DIR) $(SDK_FLAGS) -c $< -o $@
+
+icu_data: $(ICU_EMBEDDED_RES_DIR)/$(NATIVE_JRE_ICU_EMBEDDED_DATA)
+	@:
 
 test: libs_dist $(DIST_DIR)/j2objcc
 	$(MAKE) -f tests.mk all-tests
