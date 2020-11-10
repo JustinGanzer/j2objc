@@ -143,7 +143,8 @@ NATIVE_SOURCE_DIRS = $(EMULATION_CLASS_DIR) $(APPLE_ROOT) $(ANDROID_NATIVE_DIR) 
   $(ICU_EMBEDDED_RES_DIR) $(OPENJDK_MACOSX_NATIVE)
 
 # Clang warnings
-WARNINGS := $(CC_WARNINGS) $(WARNINGS) -Wno-unused-label -Wno-dangling-else
+WARNINGS := $(CC_WARNINGS) $(WARNINGS) -Wno-unused-label -Wno-dangling-else \
+  -Wimplicit-function-declaration -Wint-conversion -Wshorten-64-to-32
 
 ifeq ("$(strip $(XCODE_VERSION_MAJOR))", "0500")
 OBJCFLAGS += -DSET_MIN_IOS_VERSION
@@ -182,7 +183,10 @@ OBJCPPFLAGS := $(OBJCFLAGS) -x objective-c++ -DU_SHOW_CPLUSPLUS_API=0
 OBJCFLAGS += -std=c11
 
 ifeq ("$(strip $(CLANG_ENABLE_OBJC_ARC))", "YES")
-$(error The jre_emul build no longer supports an ARC build)
+TRANSLATE_ARGS += -use-arc
+OBJCFLAGS := $(OBJCFLAGS) -fobjc-arc -fobjc-arc-exceptions\
+ -Wno-arc-bridge-casts-disallowed-in-nonarc \
+ -Xclang -fobjc-runtime-has-weak
 endif
 
 # Specify bitcode flag if clang version 7 or greater. This is necessary to support

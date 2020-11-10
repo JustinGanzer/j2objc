@@ -177,7 +177,7 @@ public class SmallTests {
         UnicodeUtilsTest.class,
         UnsequencedExpressionRewriterTest.class,
         VarargsRewriterTest.class,
-        VariableRenamerTest.class
+        VariableRenamerTest.class,
       };
 
   public static Test suite() {

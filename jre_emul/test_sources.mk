@@ -262,6 +262,7 @@ TEST_SOURCES := \
     NoPackageTest.java \
     NSDictionaryMapTest.java \
     PackagePrefixesTest.java \
+    RetentionTest.java \
     SerializationTest.java \
     UTF16EncodingTest.java \
     android/icu/dev/test/timezone/TimeZoneAliasTest.java \
@@ -403,6 +404,7 @@ TEST_SOURCES := \
     libcore/java/io/FileInputStreamTest.java \
     libcore/java/io/FileOutputStreamTest.java \
     libcore/java/io/FileTest.java \
+    libcore/java/io/FilterInputStreamNullSourceTest.java \
     libcore/java/io/InputStreamReaderTest.java \
     libcore/java/io/ObjectOutputStreamTest.java \
     libcore/java/io/OldAndroidBufferedInputStreamTest.java \
@@ -419,6 +421,7 @@ TEST_SOURCES := \
     libcore/java/io/OldAndroidLineNumberReaderTest.java \
     libcore/java/io/OldAndroidOutputStreamWriterTest.java \
     libcore/java/io/OldAndroidPipedStreamTest.java \
+    libcore/java/io/OldAndroidPrintWriterTest.java \
     libcore/java/io/OldAndroidPushbackInputStreamTest.java \
     libcore/java/io/OldAndroidPushbackReaderTest.java \
     libcore/java/io/OldAndroidSerializationTest.java \
@@ -436,7 +439,6 @@ TEST_SOURCES := \
     libcore/java/io/OldDataInputOutputStreamTest.java \
     libcore/java/io/OldDataInputStreamTest.java \
     libcore/java/io/OldDataOutputStreamTest.java \
-    libcore/java/io/OldFileInputStreamTest.java \
     libcore/java/io/OldFileReaderTest.java \
     libcore/java/io/OldFileTest.java \
     libcore/java/io/OldFileWriterTest.java \
@@ -453,6 +455,7 @@ TEST_SOURCES := \
     libcore/java/io/OldObjectOutputStreamTest.java \
     libcore/java/io/OldObjectStreamFieldTest.java \
     libcore/java/io/OldOutputStreamTest.java \
+    libcore/java/io/OldOutputStreamWriterTest.java \
     libcore/java/io/OldPipedOutputStreamTest.java \
     libcore/java/io/OldPipedWriterTest.java \
     libcore/java/io/OldPushbackInputStreamTest.java \
@@ -1671,6 +1674,7 @@ ANDROID_TEST_RESOURCES_SRCS = \
     wrong.xml \
     tests/api/java/io/testFields.ser \
     tests/api/java/io/testFieldsDefaulted.ser \
+    tests/api/java/io/testFieldsDeprecated.ser \
     tests/api/java/io/testfile-utf8.txt \
     tests/resources/Broken_entry_data.jar \
     tests/resources/Broken_entry.jar \

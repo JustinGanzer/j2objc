@@ -116,6 +116,9 @@ endif
 
 SDK_FLAGS = -isysroot $(SDKROOT)
 
+# Enable zeroing weak references.
+OBJCFLAGS += -fobjc-weak
+
 ifeq ($(DEBUGGING_SYMBOLS), YES)
 # Enable when it's decided to distribute JRE with Java source debugging.
 # J2OBJC_DEBUGFLAGS = -g
@@ -156,6 +159,15 @@ else ifneq (,$(findstring build 11, $(shell $(JAVA) -version 2>&1)))
 JAVA_VERSION = 11
 else
 $(error JDK not supported. Please set JAVA_HOME to JDK 1.8 or 11.)
+endif
+
+ifndef MEMORY_MODEL_FLAG
+  # Default memory model.
+  MEMORY_MODEL_FLAG = -use-reference-counting
+endif
+
+ifeq ("$(strip $(MEMORY_MODEL_FLAG))", "-use-arc")
+  CLANG_ENABLE_OBJC_ARC=YES
 endif
 
 TRANSLATOR_BUILD_FLAGS = \

@@ -23,6 +23,7 @@
 #import "J2ObjC_types.h"
 
 @class IOSClass;
+@class JavaLangRefWeakReference;
 @protocol JavaLangIterable;
 
 #ifndef __has_feature
@@ -54,6 +55,12 @@
 #  define RETAIN_(x) [x retain]
 #  define RETAIN_AND_AUTORELEASE(x) [[x retain] autorelease]
 # endif
+
+#if __has_feature(objc_arc_weak)
+# define WEAK_ __weak
+#else
+# define WEAK_ __unsafe_unretained
+#endif
 
 CF_EXTERN_C_BEGIN
 

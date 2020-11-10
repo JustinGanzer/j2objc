@@ -811,7 +811,7 @@ IOSObjectArray *IOSClass_NewInterfacesFromProtocolList(
   if (!parser) {
     return [IOSObjectArray arrayWithLength:0 type:JavaLangReflectTypeVariable_class_()];
   }
-  IOSObjectArray *result = [[parser->formalTypeParameters_ retain] autorelease];
+  IOSObjectArray *result = AUTORELEASE([parser->formalTypeParameters_ retain]);
   [parser release];
   return result;
 }
@@ -865,7 +865,7 @@ IOSObjectArray *IOSClass_NewInterfacesFromProtocolList(
 
 - (IOSObjectArray *)getDeclaredAnnotations {
   const J2ObjcClassInfo *metadata = IOSClass_GetMetadataOrFail(self);
-  id (*annotations)() = JrePtrAtIndex(metadata->ptrTable, metadata->annotationsIdx);
+  id (*annotations)(void) = JrePtrAtIndex(metadata->ptrTable, metadata->annotationsIdx);
   if (annotations) {
     return annotations();
   }
@@ -1451,7 +1451,6 @@ IOSClass *IOSClass_arrayType(IOSClass *componentType, jint dimensions) {
 - (void)dealloc {
   @throw create_JavaLangAssertionError_initWithId_(
       [NSString stringWithFormat:@"Unexpected IOSClass dealloc: %@", [self getName]]);
-  // Don't call [super dealloc], since clang will correctly warn that it's unreachable code.
 }
 #pragma clang diagnostic pop
 
@@ -1480,11 +1479,13 @@ J2OBJC_NAME_MAPPING(IOSClass, "java.lang.Class", "IOSClass")
   return value_;
 }
 
+#if !__has_feature(objc_arc)
 - (void)dealloc {
-  [key_ release];
-  [value_ release];
+  RELEASE_(key_);
+  RELEASE_(value_);
   [super dealloc];
 }
+#endif
 
 @end
 

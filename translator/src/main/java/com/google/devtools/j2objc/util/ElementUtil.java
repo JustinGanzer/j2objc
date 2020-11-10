@@ -382,6 +382,10 @@ public final class ElementUtil {
         || (var instanceof GeneratedVariableElement && ((GeneratedVariableElement) var).isWeak());
   }
 
+  public static boolean isUnretainedReference(VariableElement var) {
+    return isWeakReference(var);
+  }
+
   public boolean isWeakOuterType(TypeElement type) {
     if (type instanceof LambdaTypeElement) {
       return ((LambdaTypeElement) type).isWeakOuter();

@@ -45,6 +45,9 @@ NATIVE_JRE_SOURCES_CORE = \
   NSString+JavaString.m \
   ObjectInputStream.m \
   ObjectOutputStream.m \
+  UnixFileSystem_md.m \
+  canonicalize_md.m \
+  io_util.m \
   java/lang/AbstractStringBuilder.m \
   java/lang/reflect/AccessibleObject.m \
   java/lang/reflect/Constructor.m \
@@ -294,7 +297,18 @@ JAVA_PUBLIC_SOURCES_CORE = \
   java/nio/NioUtils.java \
   java/nio/ReadOnlyBufferException.java \
   java/nio/ShortBuffer.java \
+  java/nio/channels/AsynchronousCloseException.java \
+  java/nio/channels/ByteChannel.java \
   java/nio/channels/Channel.java \
+  java/nio/channels/ClosedByInterruptException.java \
+  java/nio/channels/ClosedChannelException.java \
+  java/nio/channels/FileChannel.java \
+  java/nio/channels/GatheringByteChannel.java \
+  java/nio/channels/ReadableByteChannel.java \
+  java/nio/channels/ScatteringByteChannel.java \
+  java/nio/channels/SeekableByteChannel.java \
+  java/nio/channels/WritableByteChannel.java \
+  java/nio/channels/spi/AbstractInterruptibleChannel.java \
   java/nio/charset/CharacterCodingException.java \
   java/nio/charset/Charset.java \
   java/nio/charset/CharsetDecoder.java \
@@ -309,6 +323,7 @@ JAVA_PUBLIC_SOURCES_CORE = \
   java/nio/charset/UnsupportedCharsetException.java \
   java/nio/charset/spi/CharsetProvider.java \
   java/nio/file/Path.java \
+  java/nio/file/attribute/FileAttribute.java \
   java/nio/file/attribute/FileTime.java \
   java/security/AccessControlContext.java \
   java/security/AccessController.java \
@@ -570,8 +585,13 @@ JAVA_PRIVATE_SOURCES_CORE = \
   dalvik/system/VersionCodes.java \
   dalvik/system/VMStack.java \
   java/io/Bits.java \
+  java/io/DefaultFileSystem.java \
   java/io/DeleteOnExitHook.java \
+  java/io/ExpiringCache.java \
+  java/io/FileChannelOpener.java \
+  java/io/FileSystem.java \
   java/io/SerialCallbackContext.java \
+  java/io/UnixFileSystem.java \
   java/lang/JavaLangAccess.java \
   java/math/BitSieve.java \
   java/math/MutableBigInteger.java \
@@ -714,7 +734,9 @@ JAVA_PRIVATE_SOURCES_CORE = \
   sun/util/locale/Extension.java \
   sun/util/locale/InternalLocaleBuilder.java \
   sun/util/locale/LanguageTag.java \
+  sun/util/locale/LocaleEquivalentMaps.java \
   sun/util/locale/LocaleExtensions.java \
+  sun/util/locale/LocaleMatcher.java \
   sun/util/locale/LocaleObjectCache.java \
   sun/util/locale/LocaleSyntaxException.java \
   sun/util/locale/LocaleUtils.java \
@@ -829,7 +851,6 @@ JAVA_PRIVATE_SOURCES_NET = \
   java/net/ProxySelectorImpl.java \
   java/net/SocketInputStream.java \
   java/net/SocketOutputStream.java \
-  java/net/Socks4Message.java \
   java/net/SocksConsts.java \
   java/net/SocksSocketImpl.java \
   java/net/StandardSocketOptions.java \
@@ -939,23 +960,17 @@ JAVA_PUBLIC_SOURCES_CHANNELS = \
   java/nio/channels/AsynchronousByteChannel.java \
   java/nio/channels/AsynchronousChannel.java \
   java/nio/channels/AsynchronousChannelGroup.java \
-  java/nio/channels/AsynchronousCloseException.java \
   java/nio/channels/AsynchronousFileChannel.java \
   java/nio/channels/AsynchronousServerSocketChannel.java \
   java/nio/channels/AsynchronousSocketChannel.java \
-  java/nio/channels/ByteChannel.java \
   java/nio/channels/CancelledKeyException.java \
   java/nio/channels/Channels.java \
-  java/nio/channels/ClosedByInterruptException.java \
-  java/nio/channels/ClosedChannelException.java \
   java/nio/channels/ClosedSelectorException.java \
   java/nio/channels/CompletionHandler.java \
   java/nio/channels/ConnectionPendingException.java \
   java/nio/channels/DatagramChannel.java \
-  java/nio/channels/FileChannel.java \
   java/nio/channels/FileLock.java \
   java/nio/channels/FileLockInterruptionException.java \
-  java/nio/channels/GatheringByteChannel.java \
   java/nio/channels/IllegalBlockingModeException.java \
   java/nio/channels/IllegalChannelGroupException.java \
   java/nio/channels/IllegalSelectorException.java \
@@ -972,9 +987,6 @@ JAVA_PUBLIC_SOURCES_CHANNELS = \
   java/nio/channels/OverlappingFileLockException.java \
   java/nio/channels/Pipe.java \
   java/nio/channels/ReadPendingException.java \
-  java/nio/channels/ReadableByteChannel.java \
-  java/nio/channels/ScatteringByteChannel.java \
-  java/nio/channels/SeekableByteChannel.java \
   java/nio/channels/SelectableChannel.java \
   java/nio/channels/SelectionKey.java \
   java/nio/channels/Selector.java \
@@ -983,15 +995,12 @@ JAVA_PUBLIC_SOURCES_CHANNELS = \
   java/nio/channels/SocketChannel.java \
   java/nio/channels/UnresolvedAddressException.java \
   java/nio/channels/UnsupportedAddressTypeException.java \
-  java/nio/channels/WritableByteChannel.java \
   java/nio/channels/WritePendingException.java \
-  java/nio/channels/spi/AbstractInterruptibleChannel.java \
   java/nio/channels/spi/AbstractSelectableChannel.java \
   java/nio/channels/spi/AbstractSelectionKey.java \
   java/nio/channels/spi/AbstractSelector.java \
   java/nio/channels/spi/AsynchronousChannelProvider.java \
   java/nio/channels/spi/SelectorProvider.java \
-  java/nio/file/attribute/FileAttribute.java \
   java/util/InputMismatchException.java \
   java/util/Scanner.java
 
@@ -1814,7 +1823,6 @@ JAVA_PRIVATE_SOURCES_XML = \
   org/kxml2/io/KXmlSerializer.java
 
 NATIVE_JRE_SOURCES_ZIP = \
-  io_util.m \
   java_util_zip_Deflater.m \
   java_util_zip_Inflater.m \
   java_util_zip_ZipFile.m \
@@ -2251,14 +2259,19 @@ JAVA_PRIVATE_SOURCES_ICU = \
 NATIVE_JRE_ICU_EMBEDDED_DATA = ICUData.m
 
 # These sources are not included in any sub-library, only the full jre_emul.
-# javax.lang.model.element.Modifier is required by mockito, so it is only needed
+# javax.lang.model.element.Modifier is required by mockito, and the
+# java.lang.management classes by JUnit 4.13, so they are only needed
 # in a testing environment. The other classes are errors only thrown by a JVM.
 JAVA_PUBLIC_SOURCES_OTHER = \
   java/lang/ClassCircularityError.java \
   java/lang/UnsupportedClassVersionError.java \
+  java/lang/management/ManagementFactory.java \
+  java/lang/management/RuntimeMXBean.java \
+  java/lang/management/ThreadMXBean.java \
   javax/lang/model/element/Modifier.java
 
-JAVA_PRIVATE_SOURCES_OTHER =
+JAVA_PRIVATE_SOURCES_OTHER = \
+  java/lang/management/ThreadInfo.java
 
 ANDROID_PUBLIC_SOURCES = \
   android/os/AsyncTask.java \
@@ -2417,6 +2430,9 @@ JRE_PUBLIC_PACKAGES = \
   java.nio.channels.spi \
   java.nio.charset \
   java.nio.charset.spi \
+  java.nio.file \
+  java.nio.file.attribute \
+  java.nio.file.spi \
   java.security \
   java.security.cert \
   java.security.interfaces \
@@ -2437,7 +2453,6 @@ JRE_PUBLIC_PACKAGES = \
   java.util.logging \
   java.util.regex \
   java.util.zip \
-  javax.annotation \
   javax.crypto \
   javax.crypto.interfaces \
   javax.crypto.spec \
@@ -2449,6 +2464,7 @@ JRE_PUBLIC_PACKAGES = \
   javax.security.auth.callback \
   javax.security.auth.x500 \
   javax.security.cert \
+  javax.sql \
   javax.xml \
   javax.xml.datatype \
   javax.xml.namespace \
